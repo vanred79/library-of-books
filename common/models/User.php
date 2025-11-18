@@ -8,6 +8,12 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Token\Plain;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
+
 /**
  * User model
  *
@@ -28,6 +34,7 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+    public $password;
 
 
     /**
@@ -56,6 +63,10 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+
+            [['username', 'email', 'password'], 'required'],
+            [['email'], 'email'],
+            [['username', 'email'], 'string', 'max' => 255],
         ];
     }
 
@@ -72,7 +83,31 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        //throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        $config = Configuration::forSymmetricSigner(
+            new Sha256(),
+            InMemory::plainText('my-super-secret-key-1234567890')
+        );
+
+        try {
+            $token = $config->parser()->parse($token); // Парсим токен
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        assert($token instanceof Plain);
+
+        // Проверяем подпись
+        $constraints = [
+            new SignedWith($config->signer(), $config->signingKey())
+        ];
+
+        if (!$config->validator()->validate($token, ...$constraints)) {
+            return null;
+        }
+
+        $userId = $token->claims()->get('uid'); // uid должен быть в токене
+        return static::findOne($userId);
     }
 
     /**
@@ -110,7 +145,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
@@ -209,5 +245,17 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord && $this->password) {
+                $this->setPassword($this->password);
+                $this->generateAuthKey();
+            }
+            return true;
+        }
+        return false;
     }
 }

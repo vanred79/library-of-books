@@ -14,6 +14,9 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -36,14 +39,26 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'book'],
+                'POST auth/login' => 'auth/login',
+                '/' => 'site/index',
             ],
         ],
-        */
+
+        'jwt' => [
+            'class' => \bizley\jwt\Jwt::class,
+            //'signer' => \Lcobucci\JWT\Signer\Hmac\Sha256::class,
+            'signingKey' => 'my-super-secret-key-1234567890'
+            // ... any additional configuration here
+        ],
+
     ],
     'params' => $params,
 ];
