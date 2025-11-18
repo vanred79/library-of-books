@@ -1,60 +1,192 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
-    <br>
-</p>
+/\*
+//POST /users — регистрация нового пользователя (логин, пароль, email)
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](https://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
+$request_data = array(
+"username" => "username2",
+"email" => "username2@mail.ru",
+'password' => 'secret123'
+);
 
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
+$data =  json_encode($request_data);
 
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/users');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json',
+));
 
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
+curl_exec($ch);
+curl_close($ch);
+_/
+//-------------------------------------------------------
+/_
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![build](https://github.com/yiisoft/yii2-app-advanced/workflows/build/badge.svg)](https://github.com/yiisoft/yii2-app-advanced/actions?query=workflow%3Abuild)
+//GET /users/{id} — просмотр профиля (только для авторизованных)
 
-DIRECTORY STRUCTURE
--------------------
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/users/1');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json',
+'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsaWJyYXJ5LWJvb2tzLmxvY2FsIiwiYXVkIjoibGlicmFyeS1ib29rcy5sb2NhbCIsImp0aSI6IjRmMWcyM2ExMmFhIiwiaWF0IjoxNzYzNDExMDU2LjUzNzU1MiwiZXhwIjoxNzYzNDE0NjU2LjUzNzU1MiwidWlkIjoxfQ.Uuxe1yRCiruZEW1XBj9GGZXN2RtBBJGCYv9xRWM7A6s',
+));
 
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-```
+curl_exec($ch);
+curl_close($ch);
+
+_/
+/_
+
+//-------------------------------------------------------
+
+//POST /auth/login — авторизация (получение JWT токена)
+
+$request_data = array(
+"username" => "username1",
+'password' => 'secret123'
+);
+
+$data =  json_encode($request_data);
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/auth/login');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json',
+));
+
+curl_exec($ch);
+curl_close($ch);
+
+_/
+/_
+//-------------------------------------------------------
+//GET /books/{id} — получить информацию о книге
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books'); //получить все книги
+//curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books?page=1&per-page=5'); //получить книги page 1 
+//curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books?page=2&per-page=5'); //получить книги page 2
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json'  
+));
+
+curl_exec($ch);
+curl_close($ch);
+
+\*/
+
+/\*
+//-------------------------------------------------------
+
+//POST /books — добавить книгу (только авторизованный пользователь)
+
+$request_data = array(
+"title" => "title book 11",
+"body" => "body book 11"
+);
+
+$data =  json_encode($request_data);
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json',
+'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsaWJyYXJ5LWJvb2tzLmxvY2FsIiwiYXVkIjoibGlicmFyeS1ib29rcy5sb2NhbCIsImp0aSI6IjRmMWcyM2ExMmFhIiwiaWF0IjoxNzYzNDcwMTkyLjYxMDAxOCwiZXhwIjoxNzYzNDczNzkyLjYxMDAxOCwidWlkIjoxfQ.Onih6B4r2zuQU1LBkQC01UUkHAA8EM8vN12Z7DPVlmo'
+));
+
+curl_exec($ch);
+curl_close($ch);
+_/
+/_
+
+//-------------------------------------------------------
+//GET /books/{id} — получить информацию о книге
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books/1');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json'  
+));
+
+curl_exec($ch);
+curl_close($ch);
+\*/
+
+/\*
+//-------------------------------------------------------
+
+//PUT /books/{id} — обновить данные книги (только авторизованный)
+
+$request_data = array(
+"title" => "Updated title",
+"body" => "Updated body"
+);
+
+$data =  json_encode($request_data);
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books/1');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json',
+'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsaWJyYXJ5LWJvb2tzLmxvY2FsIiwiYXVkIjoibGlicmFyeS1ib29rcy5sb2NhbCIsImp0aSI6IjRmMWcyM2ExMmFhIiwiaWF0IjoxNzYzNDczODM4LjUwMDExLCJleHAiOjE3NjM0Nzc0MzguNTAwMTEsInVpZCI6MX0.1gG4HEkwuoNh-azaeuO9shcdqAGiRDzUrcQAkRAGiyk'
+));
+
+curl_exec($ch);
+curl_close($ch);
+
+_/
+/_
+//-------------------------------------------------------
+
+DELETE /books/{id} — удалить книгу (только авторизованный)
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://library-books.local/books/11');
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36');
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+'Content-Type: application/json',
+'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsaWJyYXJ5LWJvb2tzLmxvY2FsIiwiYXVkIjoibGlicmFyeS1ib29rcy5sb2NhbCIsImp0aSI6IjRmMWcyM2ExMmFhIiwiaWF0IjoxNzYzNDczODM4LjUwMDExLCJleHAiOjE3NjM0Nzc0MzguNTAwMTEsInVpZCI6MX0.1gG4HEkwuoNh-azaeuO9shcdqAGiRDzUrcQAkRAGiyk'
+));
+
+curl_exec($ch);
+curl_close($ch);
+\*/
